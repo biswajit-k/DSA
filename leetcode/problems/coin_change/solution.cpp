@@ -1,39 +1,24 @@
 class Solution {
 public:
-    int mincoin[100008];
-    
-    int minCoins(vector<int>& coins, int amount){
-        if(amount == 0)
-                return 0;
-        if(mincoin[amount] < 100005)
-            return mincoin[amount];
-        
-        for(auto coin: coins)
-        {
-            if(amount - coin >= 0)
-            {
-                int amt = minCoins(coins, amount - coin);
-                if(amt == -1)
-                    continue;
-                mincoin[amount] = min(mincoin[amount], 1 + amt);   
-            }
-            else 
-                break;
-            
-        }
-        if(mincoin[amount] < 100005)
-            return mincoin[amount];
-        return mincoin[amount] = -1;
-    
-    }
+   
     
     int coinChange(vector<int>& coins, int amount) {
-        sort(coins.begin(), coins.end());
-        for(int i = 0; i < 100006; i++)
-                mincoin[i] = 100008;
-        int amt = minCoins(coins, amount);
-        if(amt > 100005)
-            return -1;
-        return amt;
+        
+        const int inf = 1000000;
+        
+        vector<int> dp(amount + 1, 0);
+        for(auto x: coins)
+            if(x <= amount) dp[x] = 1;
+        
+        for(int i = 1; i <= amount; i++)
+        {
+            int mi = inf;
+            for(auto x: coins)
+                if(i - x >= 0)
+                    mi = min(mi, 1 + dp[i - x]);
+            dp[i] = mi;
+        }
+        return (dp[amount] >= inf ? -1 : dp[amount]);
+        
     }
 };
