@@ -1,11 +1,23 @@
 class Solution {
 public:
+    
+    int ans = 0;
+    
+    int doit(string& s, int l, int r)
+    {
+        int c = 0;
+        while(l > -1 && r < s.length() && s[l] == s[r])
+            l--, r++, c++;
+        return c;
+    }
+    
     int countSubstrings(string s) {
-        int res = 0, n = s.length();
-        for(int i = 0; i < n; i++){
-            for(int j = 0; i-j >= 0 && i+j < n && s[i-j] == s[i+j]; j++)res++; //substring s[i-j, ..., i+j]
-            for(int j = 0; i-1-j >= 0 && i+j < n && s[i-1-j] == s[i+j]; j++)res++; //substring s[i-1-j, ..., i+j]
-        }
-        return res;
+        
+        for(int i = 0;i < s.length(); i++)
+            ans += doit(s, i, i) + doit(s, i - 1, i);
+
+        
+        
+        return ans;
     }
 };
