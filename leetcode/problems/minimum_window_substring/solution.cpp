@@ -1,64 +1,39 @@
 class Solution {
 public:
     string minWindow(string s, string p) {
-        int req[400], curr[400], m = p.size(), n = s.size();
-        memset(req, 0, sizeof(req));
-        memset(curr, 0, sizeof(curr));
+        
+        int curr[130], req[130], n = s.size(), m = p.size();
+        for(int i = 0; i < 130; i++)
+            curr[i] = req[i] = 0;
+        
         for(auto c: p)
             req[c]++;
         
-        int j = -1, len = 0;
-        bool po = 0;
+        int i = 0, len = 0;
         pair<int, int> ans;
+        bool po = 0;
         
-        for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
         {
-            if(i > 0 && req[s[i - 1]])
+            curr[s[j]]++;
+            if(curr[s[j]] <= req[s[j]]) len++;
+            
+            while(len == m)
             {
-                if(curr[s[i - 1] ] == req[s[i - 1] ])
+                if(!po || (ans.second - ans.first > j - i))
+                    ans = {i, j};
+                po = 1;
+                curr[s[i]]--;
+                if(req[s[i]] > curr[s[i]])
                     len--;
-                curr[s[i - 1]]--;
+                i++;
             }
-            
-            if(i > j && req[s[i] ])
-            {
-                if(curr[s[i] - 'A'] < req[s[i]])  len++;
-                curr[s[i]]++;
-                
-                j = i;
-            }
-            // if(j < i)
-            //     j = i;
-            
-            while(j < n && len < m)
-            {
-                j++;
-                if(j == n)
-                    break;
-                 
-                if(req[s[j] ])
-                {
-                    if(curr[s[j] ] < req[s[j] ])
-                        len++;
-                    curr[s[j] ]++;
-                }            
-                    
-            }
-            
-            if(len < m)
-                break;
-            if(!po || (ans.second - ans.first > j - i))
-                ans = {i, j};
-            
-            po = 1;
             
         }
         
         if(!po)
             return "";
-        
-        else 
-            return s.substr(ans.first, ans.second - ans.first + 1);
-        
+        return s.substr(ans.first, ans.second - ans.first + 1);
+            
     }
 };
