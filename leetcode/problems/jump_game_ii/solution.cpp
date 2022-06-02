@@ -1,29 +1,25 @@
 class Solution {
 public:
-    
-    
-    int doit(vector<int>& nums, vector<int>& steps, int pos)
-    {
-        if(pos >= nums.size() - 1)
-            return 0;
-        if(steps[pos] != -1)
-            return steps[pos];
-        
-        int low = 1999999;
-        for(int i = 1; i <= nums[pos]; i++)
-            low = min(low, doit(nums, steps, pos + i));
-        
-        return steps[pos] = (1 + low);
-    }
-        
+
     
     int jump(vector<int>& nums) {
         
-        int n = nums.size();
+        int n = nums.size(), pos = 0, ans = 0, max_reach = 0;
         
-        vector<int> steps(n, -1);
+        while(max_reach < n - 1)
+        {
+            int cur_reach = max_reach;
+            ans++;
+            
+            while(pos <= cur_reach)
+            {
+                max_reach = max(max_reach, nums[pos] + pos);
+                pos++;
+            }
+            
+        }
         
-        return doit(nums, steps, 0);
+        return ans;
         
     }
 };
