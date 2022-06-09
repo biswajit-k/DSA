@@ -1,34 +1,25 @@
 class Solution {
 public:
+    
+    int dp[101][101];
+    
     int findMaxForm(vector<string>& strs, int m, int n) {
-        
-        vector<vector<int>> dp1(m + 1, vector<int>(n + 1, 0));
-        
-        vector<pair<int, int>> a(strs.size());
+      
+        for(int i = 0; i < 101; i++)
+            for(int j = 0; j < 101; j++)
+                dp[i][j] = 0;
         
         for(int i = 0; i < strs.size(); i++)
         {
-            a[i].first = count(strs[i].begin(), strs[i].end(), '0');
-            a[i].second = int(strs[i].size()) - a[i].first;
-        }
-        
-        
-        for(auto [p, q]: a)
-        {
-        
-            for(int i = m; i > -1; i--)
-            {
-                if(i - p < 0)   break;
-                for(int j = n; j > -1; j--)
-                {
-                    if(j - q < 0)   break;
-                    dp1[i][j] = max(dp1[i][j], 1 + dp1[i - p][j - q]);
-                }
-            }
-        }
-        
-        return dp1[m][n];
+            int zero = count(begin(strs[i]), end(strs[i]), '0');
+            int one = strs[i].length() - zero;
             
+            for(int j = m; j >= zero; j--)
+                for(int k = n; k >= one; k--)
+                    dp[j][k] = max(dp[j][k], 1 + dp[j - zero][k - one]);
+            
+        }
         
+        return dp[m][n];
     }
 };
