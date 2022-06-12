@@ -1,56 +1,31 @@
 class Solution {
 public:
 
-    const int inf = 88888888;
-
-    int doit(vector<int>& cookies, int k)
+    const int inf = 98878778;
+    
+    int helper(vector<int>& cookies, vector<int>& dp, int k, int pos)
     {
-        int l = *max_element(begin(cookies), end(cookies)), r = accumulate(begin(cookies), end(cookies), 0), ans = inf;
-
-        while(l <= r)
+        if(pos == cookies.size())
         {
-            int mid = (l + r) / 2;
-
-            int partition = 1, curr = 0;
-
-            for(int i = 0; i < cookies.size(); i++)
-            {
-                if(curr + cookies[i] <= mid)
-                    curr += cookies[i];
-                else 
-                {
-                    partition++;
-                    curr = cookies[i];
-                }
-            }
-
-            if(partition > k)
-                l = mid + 1;
-            else 
-            {
-                r = mid - 1;
-                ans = min(ans, mid);
-            }
-
+            return *max_element(begin(dp), end(dp));
         }
-
-        return ans;
-
+        int mi = inf;
+        for(int i = 0; i < k; i++)
+        {
+            dp[i] += cookies[pos];
+            mi = min(mi, helper(cookies, dp, k, pos + 1));
+            dp[i] -= cookies[pos];
+        }
+        
+        return mi;
     }
 
     int distributeCookies(vector<int>& cookies, int k) {
+       
+        int n = cookies.size();
+        vector<int> dp(k, 0);
         
-        int ans = inf; 
-
-        sort(begin(cookies), end(cookies));
-
-        do{
-            ans = min(ans, doit(cookies, k));
-
-        } while(next_permutation(begin(cookies), end(cookies)));    
-
-        return ans;
-
+        return helper(cookies, dp, k, 0);
 
     }
 };
