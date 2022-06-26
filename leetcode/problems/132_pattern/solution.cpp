@@ -1,32 +1,27 @@
 class Solution {
 public:
     
-    const int inf = 1e9 + 1;
+    const int inf = 1e9 + 4;
     
     bool find132pattern(vector<int>& nums) {
         
-        int k = -inf;
+        int mid = -inf;
         stack<int> st;
-        for(int i = size(nums) - 1; i > -1; i--)
+        st.push(nums.back());
+        
+        for(int i = nums.size() - 2; i > -1; i--)
         {
-            if(nums[i] < k)
+            if(nums[i] < mid)
                 return true;
             while(!st.empty() && st.top() < nums[i])
             {
-                k = st.top();
+                mid = st.top();
                 st.pop();
             }
-            st.push(nums[i]);
             
+            st.push(nums[i]);
         }
         
         return false;
     }
-
 };
-
-/*
-    nums 4 6 5 1 ... .... 5 7 3 2
-    ary  0 3
-
-*/
