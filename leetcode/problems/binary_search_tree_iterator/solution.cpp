@@ -12,36 +12,65 @@
 class BSTIterator {
 public:
     
-    vector<int> tree;
-    int idx;
-    
-    void inorder(TreeNode * root)
-    {
-        if(root)
-        {
-            inorder(root -> left);
-            tree.push_back(root -> val);
-            inorder(root -> right);
-        }
-    }
+    stack<TreeNode*> st;
+    TreeNode* curr;
     
     BSTIterator(TreeNode* root) {
-        tree.push_back(-1);
-        inorder(root);
-        idx = 0;
+       curr = root;
     }
     
     int next() {
-        idx++;
-        return tree[idx];
+      
+        while(curr && curr -> left)
+        {
+            st.push(curr);
+            curr = curr -> left;
+        }
+        
+        if(!curr)
+        {
+            curr = st.top();
+            st.pop();
+        }
+        
+        int x = curr -> val;
+        
+        curr = curr -> right;
+        return x;
+        
     }
     
     bool hasNext() {
-        if(idx + 1 < tree.size())
-            return true;
-        return false;
+        return (curr || !st.empty());
     }
 };
+
+/*
+    - push curr_node
+    - if left_node exist
+        - curr_node = curr -> left
+    - else 
+        - visit curr_node
+        if right_node exist
+            - curr_node = curr -> right 
+        else 
+            - visit nearest_unvisited_parent
+            
+    while(curr && curr -> left exist)
+        st.push(curr)
+        curr = curr -> left;
+        
+    if(!curr)
+        curr = st.top()
+        st.pop()
+        
+    print(curr)
+    
+    curr = curr -> right
+
+*/
+
+
 
 /**
  * Your BSTIterator object will be instantiated and called as such:
@@ -49,3 +78,5 @@ public:
  * int param_1 = obj->next();
  * bool param_2 = obj->hasNext();
  */
+
+
