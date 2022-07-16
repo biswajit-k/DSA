@@ -1,46 +1,52 @@
 class Solution {
 public:
-    
-    string dec(string s, int& pos)
-    {
+    string decodeString(string s) {
+        
+        stack<int> freq;
+        stack<string> strs;
         string cur = "";
-        int freq = 0;
-        while(pos < s.length())
+        
+        int i = 0;
+        
+        while(i < s.length())
         {
-            if(s[pos] >= '0' && s[pos] <= '9')
+            auto c = s[i];
+            if(c >= '0' && c <= '9')
             {
-                freq = freq * 10 + (s[pos] - '0');
+                int x = 0;
+                while(i < s.length() && s[i] >= '0' && s[i] <= '9')
+                {
+                    x *= 10;
+                    x += s[i] - '0';
+                    i++;
+                }
+                i--;
+                freq.push(x);
             }
-            else if(s[pos] == '[')
-            {
-                string ans = dec(s, ++pos);
-                for(int i = 0; i < freq; i++)
-                        cur += ans;
-                freq = 0;
-                continue;
                 
-            }
-            else if(s[pos] == ']')
+                
+            else if(c == '[')
             {
-                pos++;
-                break;
+                strs.push(cur);
+                cur = "";
             }
-            else
+            else if(c == ']')
             {
-                cur += s[pos];
+                int count = freq.top();
+                freq.pop();
+                string prev = strs.top();
+                strs.pop();
+                while(count--)
+                {
+                    prev += cur;
+                }
+                cur = prev;
             }
+            else 
+                cur += c;
+            i++;
             
-            
-            pos++;
         }
         return cur;
-        
-        
-        
-    }
-    
-    string decodeString(string s) {
-        int pos = 0;
-        return dec(s, pos);
     }
 };
