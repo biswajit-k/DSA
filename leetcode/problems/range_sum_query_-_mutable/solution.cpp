@@ -1,73 +1,44 @@
 class NumArray {
-    
 public:
     
-    int block_sz;
-    int* ary, *sum;
-    
-    int get_block(int i)
-    {
-         return i / block_sz;
-    }
+    vector<int> bit;
+    int sz;
     
     NumArray(vector<int>& nums) {
         
-        int n = nums.size();
-        block_sz = sqrt(n);
-        ary = new int[n];
-        for(int i = 0; i < n; i++)  ary[i] = nums[i];
+        bit.reserve(size(nums) + 1);
         
-        sum = new int[get_block(n - 1) + 1];
+        bit.push_back(0);
+        for(auto& x: nums)
+            bit.push_back(x);
         
+        sz = size(nums);
         
-        
-        int s = 0, pos = 0;
-        for(int i = 0; i < n; i++)
-            if(!(i % block_sz) && i)
-            {
-                sum[pos] = s;
-                s = ary[i];
-                pos++;
-            }
-            else s += ary[i];
-        
-        sum[pos] = s;
-        
-    }
-    
-    void update(int i, int val) {
-        
-        int block = get_block(i);
-        sum[block] += val - ary[i];
-        ary[i] = val;
-    }
-    
-    int sumRange(int left, int right) {
-        
-        int l = get_block(left), r = get_block(right);
-        
-        int ans = 0;
-        
-        if(l == r)
-            for(int i = left; i <= right; i++)   ans += ary[i];
-        
-        else 
+        for(int i = 1; i <= sz; i++)
         {
-            for(int i = left; get_block(i) == l; i++)   ans += ary[i];
-            
-            for(int i = l + 1; i < r; i++)  ans += sum[i];
-                
-            for(int i = right; get_block(i) == r; i--)  ans += ary[i];
-
-        }
-            
-        return ans;
+            int idx = i + (i & (-i));
+            if(idx <= sz)
+                bit[idx] += bit[i];
+        }   
+    }
+    
+    void add(int idx, int val) {
+        for(idx; idx <= sz; idx += (idx & (-idx)))
+            bit[idx] += val;
+    }
+    
+    int prefix_sum(int idx) {
+        int sum = 0;
+        for(idx; idx > 0; idx -= (idx & (-idx)))
+            sum += bit[idx];
+        return sum;
+    }
+    
+    void update(int index, int val) {
+        add(index + 1, val - sumRange(index, index));
+    }
+    
+    int sumRange(int l, int r) {
+        return prefix_sum(r + 1) - prefix_sum(l);   
     }
 };
-
-/**
- * Your NumArray object will be instantiated and called as such:
- * NumArray* obj = new NumArray(nums);
- * obj->update(index,val);
- * int param_2 = obj->sumRange(left,right);
- */
