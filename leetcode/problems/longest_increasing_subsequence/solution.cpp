@@ -1,20 +1,35 @@
 class Solution {
 public:
+    
+    const static int sz = 2e4 + 3;
+    int bit[sz] = {};
+    
+    void update(int x, int len)
+    {
+        for(; x <= sz; x += (x & -x))
+            bit[x] = max(bit[x], len);
+    }
+    
+    int get(int x)
+    {
+        int c_len = 0;
+        for(; x; x -= (x & -x))
+            c_len = max(c_len, bit[x]);
+        return c_len;
+    }
+    
     int lengthOfLIS(vector<int>& nums) {
         
-        int n = nums.size();
-        vector<int> lis;
+        int offset = 1e4 + 1, ans = 0;
         
-        for(auto& x: nums)
+        for(auto& val: nums)
         {
-            auto it = lower_bound(begin(lis), end(lis), x);
-            if(it == lis.end())
-                lis.push_back(x);
-            else 
-                *it = x;
+            int x = val + offset;
+            int cur_len = get(x - 1);
+            update(x, cur_len + 1);
+            ans = max(ans, cur_len + 1);
         }
         
-        return int(lis.size());
-        
+        return ans;
     }
 };
