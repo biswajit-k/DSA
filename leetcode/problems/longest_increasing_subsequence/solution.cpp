@@ -3,18 +3,18 @@ public:
     int lengthOfLIS(vector<int>& nums) {
         
         int n = nums.size();
-        vector<int> ans;
+        vector<int> lis;
         
-        for(int i = 0; i < n; i++)
+        for(auto& x: nums)
         {
-            auto it = lower_bound(begin(ans), end(ans), nums[i]);
-            if(it == end(ans))
-                ans.push_back(nums[i]);
+            auto it = lower_bound(begin(lis), end(lis), x);
+            if(it == lis.end())
+                lis.push_back(x);
             else 
-                *it = nums[i];
+                *it = x;
         }
         
-        return int(size(ans));
+        return int(lis.size());
         
     }
 };
