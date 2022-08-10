@@ -17,19 +17,16 @@ public:
         if(l > r)   return nullptr;
         
         int mid = (l + r) / 2;
-        TreeNode* node = new TreeNode(nums[mid]);
+        TreeNode *root = new TreeNode(nums[mid]);
         
-        if(l == r)
-            return node;
+        root -> left = helper(nums, l, mid - 1);
+        root -> right = helper(nums, mid + 1, r);
         
-        node -> left = helper(nums, l, mid - 1);
-        node -> right = helper(nums, mid + 1, r);
-        
-        return node;
-        
+        return root;
     }
     
+    
     TreeNode* sortedArrayToBST(vector<int>& nums) {
-        return helper(nums, 0, size(nums) - 1);
+        return helper(nums, 0, nums.size() - 1);
     }
 };
