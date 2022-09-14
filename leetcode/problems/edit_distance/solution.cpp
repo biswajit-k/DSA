@@ -1,27 +1,33 @@
 class Solution {
 public:
-    
-int minDistance(string word1, string word2) {
-        int s1=word1.length(),s2=word2.length();
+    int minDistance(string a, string b) {
+        int n = a.length(), m = b.length();
+        if(n == 0 || m == 0)
+            return abs(n - m);
+        vector<int> prev(m + 1), curr(m + 1);
 
-        int dp[s2+1][s1+1];
-        dp[0][0]=0;
-        for(int i=1;i<=s1;i++)
-            dp[0][i]=i;
-        for(int i=1;i<=s2;i++)          //[i][j]-> minimum steps req to form first i char o f word2 form word1 
-            dp[i][0]=i;
+        for(int i = 0; i <= m; i++)
+            prev[m - i] = i;
+        curr[m] = 1;
 
-        for(int i=1;i<=s2;i++)
-            for(int j=1;j<=s1;j++)
-                if(word1[j-1]==word2[i-1])
+        for(int i = n - 1; i > -1; i--)
+        {
+            for(int j = m - 1; j > -1; j--)
+            {
+                if(a[i] == b[j])
+                    curr[j] = prev[j + 1];
+                else 
                 {
-                    dp[i][j]=dp[i-1][j-1];
-                }        
-                else
-                {
-                    dp[i][j]=1+min({dp[i-1][j-1],dp[i][j-1],dp[i-1][j]});
+                    int add = 1 + curr[j + 1];
+                    int remove = 1 + prev[j];
+                    int replace = 1 + prev[j + 1];
+                    curr[j] = min({add, remove, replace});
                 }
-        return dp[s2][s1];
-    }
+            }
+            prev = curr;
+            curr[m] = n - i + 1;
+        }
 
+        return curr[0];
+    }
 };
