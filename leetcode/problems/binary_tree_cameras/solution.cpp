@@ -11,25 +11,29 @@
  */
 class Solution {
 public:
-    #define NO_CAMERA       0
-    #define HAS_CAMERA      2
-    #define NOT_NEEDED      1
-    int ans = 0;
-    int dfs(TreeNode *root) {
-        if (!root) return NOT_NEEDED;
-        int l = dfs(root->left);
-        int r = dfs(root->right);
-        if (l == NO_CAMERA || r == NO_CAMERA) {
-            ans++;
-            return HAS_CAMERA;
-        } else if (l == HAS_CAMERA || r == HAS_CAMERA) {
-            return NOT_NEEDED;
-        } else {
-            return NO_CAMERA;
-        }
+
+    const int inf = 1001;
+    map<TreeNode*, array<int, 3>> dp; 
+
+    void dfs(TreeNode* x) {
+        TreeNode *c1 = x -> left, *c2 = x -> right;
+
+        if(c1)  dfs(c1);
+        if(c2)  dfs(c2);
+
+        dp[x][2] = (c1 ? dp[c1][0] : 0) + (c2 ? dp[c2][0] : 0);
+        dp[x][1] = 1 + (c1 ? *min_element(begin(dp[c1]), end(dp[c1])) : 0) + (c2 ? *min_element(begin(dp[c2]), end(dp[c2])) : 0);
+
+        dp[x][0] = inf;
+        if(c1 && !c2)   dp[x][0] = min(dp[x][0], dp[c1][1]);
+        if(!c1 && c2)   dp[x][0] = min(dp[x][0], dp[c2][1]);
+        if(c1 && c2)    dp[x][0] = min({dp[x][0], dp[c1][1] + dp[c2][1], dp[c1][0] + dp[c2][1], dp[c1][1] + dp[c2][0]});
+        
     }
+
     int minCameraCover(TreeNode* root) {
-        if (dfs(root) == NO_CAMERA) ans++;
-        return ans;
+
+        dfs(root);
+        return min(dp[root][0], dp[root][1]);
     }
 };
