@@ -1,65 +1,63 @@
 class Solution {
 public:
-    string simplifyPath(string path) {
-        stack<string> ans;
-        ans.push("/");
-        string curr = "";
-        
-        for(auto c: path)
+
+    void operation(string& s, stack<string>& path) {
+
+        if(s == "..")
         {
-            if(c == '/')
+            if(path.size() > 1)
             {
-                string now = curr;
-                curr = "";
-                if(now == "..")
-                {
-                    if(ans.size() > 2)
-                    {
-                        ans.pop();
-                        ans.pop();
-                    }
-                        
-                }
-                else if(now == "." || now == "")
-                    continue;
-                else 
-                    ans.push(now), ans.push("/");    
-                    
+                path.pop();
+                path.pop();
             }
-            else 
-                curr.push_back(c);
         }
-        
-        stack<string> s2;
-        string now = curr;
-        curr = "";
-        if(now == "..")
+        else if(s.length() && s != ".")
         {
-            if(ans.size() > 2)
+            path.push(s);
+            path.push("/");
+        }
+        s.clear();
+
+    }
+
+    string simplifyPath(string path) {
+
+        int n = path.length();
+
+        stack<string> new_path;
+        new_path.push("/");
+        
+        string s = "";
+
+        int i = 0;
+        while(i < n)
+        {
+            if(path[i] != '/')
             {
-                ans.pop();
-                ans.pop();
+                s += path[i];
+                i++;
+                continue;
             }
 
+            while(i < n && path[i] == '/')   i++;
+
+            operation(s, new_path);
         }
-        else if(now == "." || now == "")
-            curr = "4";
-        else 
-            ans.push(now); 
-        
-        if(ans.top() == "/")
-            ans.pop();
-        while(!ans.empty())
+
+        operation(s, new_path);
+        if(new_path.size() > 1 && new_path.top() == "/")   new_path.pop();
+
+        string ans = "";
+        while(!new_path.empty())
         {
-            s2.push(ans.top());
-            ans.pop();
+            string res = new_path.top();
+            new_path.pop();
+            reverse(begin(res), end(res));
+
+            ans += res;
         }
-        string res = "";
-        while(!s2.empty())
-            res += s2.top(), s2.pop();
-        
-        if(res.length() == 0)
-            res = "/";
-        return res;
+
+        reverse(begin(ans), end(ans));
+        return ans;
     }
 };
