@@ -1,50 +1,44 @@
 class Solution {
 public:
+
+    int sum(int idx, vector<int>& bit) {
+
+        int res = 0;
+        for(; idx > 0; idx -= (idx & -idx))
+            res += bit[idx];
+        return res;
+    }
+    void add(int idx, int v, vector<int>& bit) {
+        int n = bit.size() - 1;
+        for(; idx <= n; idx += (idx & -idx))
+            bit[idx] += v;
+    }
+
+
     vector<int> countSmaller(vector<int>& nums) {
         
         int n = nums.size();
-        vector<int> count(n, 0), dup(n);
 
-        iota(begin(dup), end(dup), 0);
-        
-        function<void(int, int)> merge_sort = [&](int l, int r) {
+        vector<int> dup = nums;
+        sort(dup.begin(), dup.end());
+        dup.resize(unique(dup.begin(), dup.end()) - dup.begin());
 
-            if(l == r)
-                return;
-            
-            int m = (l + r) / 2;
-            merge_sort(l, m);
-            merge_sort(m + 1, r);
+        int m = dup.size();
+        unordered_map<int, int> mp;
+        for(int i = 0; i < m; i++)
+            mp[dup[i]] = i + 1;
 
-            vector<int> res(r - l + 1);
+        vector<int> bit(m + 1, 0);
 
-            int i = l, j = m + 1, k = 0;
-            while(i <= m && j <= r)
-            {
-                if(nums[dup[i]] <= nums[dup[j]])
-                {
-                    res[k++] = dup[i];
-                    count[dup[i]] += r - j + 1;
-                    i++;
-                }
-                else
-                    res[k++] = dup[j++];
-            }
+        vector<int> ans(n, 0);
+        for(int i = n - 1; i > -1; i--)
+        {
+            int x = mp[nums[i]];
+            ans[i] = sum(x - 1, bit);
 
-            while(j <= r)
-                res[k++] = dup[j++];
-            while(i <= m)
-                res[k++] = dup[i++];
+            add(x, 1, bit);
+        }
 
-            for(int i = l; i <= r; i++)
-                dup[i] = res[i - l];
-
-        };
-
-        merge_sort(0, n - 1);
-        for(int i = 0; i < n; i++)
-            count[i] = n - i - 1 - count[i];
-
-        return count;
+        return ans;
     }
 };
