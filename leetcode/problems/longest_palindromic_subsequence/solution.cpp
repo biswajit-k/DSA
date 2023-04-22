@@ -1,24 +1,18 @@
 class Solution {
 public:
+
+    int lcs(string &a, string &b) {
+    short m[1001][1001] = {};
+    for (auto i = 0; i < a.size(); ++i)
+        for (auto j = 0; j < b.size(); ++j)
+            m[i + 1][j + 1] = a[i] == b[j] ? m[i][j] + 1 : max(m[i + 1][j], m[i][j + 1]);
+    return m[a.size()][b.size()];
+}
     int longestPalindromeSubseq(string s) {
         
-        int n = s.length();
+        string rev = s;
+        reverse(begin(rev), end(rev));
 
-        vector<vector<int>> lps(n, vector<int>(n, 0));
-        for(int i = 0; i < n ;i++)
-            lps[i][i] = 1;
-
-        for(int j = 1; j < n; j++)
-        {
-            for(int i = j - 1; i > -1; i--)
-            {
-                if(s[i] == s[j])
-                    lps[i][j] = 2 + lps[i + 1][j - 1];
-                else 
-                    lps[i][j] = max(lps[i + 1][j], lps[i][j - 1]);
-            }
-        }
-    
-        return lps[0][n - 1];
+        return lcs(s, rev);
     }
 };
