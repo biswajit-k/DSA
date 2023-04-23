@@ -1,76 +1,34 @@
 class Solution {
 public:
-    
-    /*
-            fenwick tree depend on number range
-                [-1e6, 1e6] => add offset => new range [0, 2e6]
-                    time -> O(logN)
-                any range but numbers known => map
+    vector<int> getSubarrayBeauty(vector<int>& nums, int k, int x) {
         
-    */
-    
-    void add(int idx, int v, vector<int>& bit) {
+        int n = nums.size();
         
-        for(; idx < bit.size(); idx += (idx & -idx))
-            bit[idx] += v;
-    }
-    
-    int sum(int idx, vector<int>& bit) {
-        
-        int ans = 0;
-        for(; idx > 0; idx -= (idx & -idx))
-            ans += bit[idx];
-        return ans;
-    }
-    
-    int search(int pos, vector<int>& bit, vector<int>& dup) {
-        
-        int l = 1, r = bit.size() - 1;
-        
-        while(l < r) 
+        vector<int> res;
+        multiset<int> st;
+
+        multiset<int>::iterator it;
+        for(int i = 0; i < n; i++)
         {
-            int m = (l + r) / 2;
+            st.insert(nums[i]);
+
+            if(i == k - 1)
+                it = next(st.begin(), x - 1);
+
+            if(i >= k && nums[i] < *it)
+                it--;
             
-            int s = sum(m, bit);
-            
-            if(s < pos)
-                l = m + 1;
-            else 
-                r = m;
+            if(i >= k)
+            {
+                if(nums[i - k] <= *it)  
+                    it++;
+                st.erase(st.find(nums[i - k]));
+            }
+
+            if(i >= k - 1)
+                res.push_back(min(0, *it));
         }
-        return min(0, dup[l - 1]);
-    }
-    
-    
-    vector<int> getSubarrayBeauty(vector<int>& A, int k, int x) {
-        
-        int n = A.size();
-        
-        
-        vector<int> dup = A;
-        sort(begin(dup), end(dup));
-        dup.resize(unique(begin(dup), end(dup)) - begin(dup));
-        
-        int m = dup.size();
-        
-        vector<int> bit(m + 1, 0), res;
-        unordered_map<int, int> mp;
-        for(int i = 0; i < m; i++)
-            mp[dup[i]] = i + 1;
-        
-        for(int i = 0; i < k; i++)
-            add(mp[A[i]], 1, bit);
-        
-        res.push_back(search(x, bit, dup));
-        
-        for(int i = k; i < n; i++)
-        {
-            add(mp[A[i - k]], -1, bit);
-            add(mp[A[i]], 1, bit);
-            
-            res.push_back(search(x, bit, dup));
-        }
-        
+
         return res;
     }
 };
