@@ -12,37 +12,32 @@ class Solution {
 public:
     ListNode* partition(ListNode* head, int x) {
         
-        ListNode dummy;
-        ListNode *prefix = &dummy;
-        prefix -> next = head;
-        
-        ListNode *curr = head;
-        
-        //Extend prefix until value smaller than x is found
-        while(curr && curr -> val < x)
+        if(!head)
+            return nullptr;
+
+        ListNode dummy = ListNode(), *slow = &dummy, *fast = &dummy;
+        dummy.next = head;
+
+        while(fast -> next && fast -> next -> val < x)
+            fast = fast -> next, slow = slow -> next;
+
+        if(fast -> next)    fast = fast -> next;
+
+        ListNode *temp;
+        while(fast -> next)
         {
-            prefix -> next = curr;
-            prefix = curr;
-            curr = curr -> next;
-        }
-        
-        // now curr either points to value >= x or end of list
-        while(curr && curr -> next)
-        {
-            if(curr -> next -> val >= x)
-                curr = curr -> next;
-            
-            // else pick-out the value and place in the left partition
-            else 
+            if(fast -> next -> val >= x)
             {
-                ListNode *temp = prefix -> next;
-                prefix -> next = curr -> next;
-                curr -> next = curr -> next -> next;
-                prefix = prefix -> next;
-                prefix -> next = temp;
+                fast = fast -> next;
+                continue;
             }
+            temp = fast -> next;
+            fast -> next = temp -> next;
+            temp -> next = slow -> next;
+            slow -> next = temp;
+            slow = slow -> next;
         }
-            
+
         return dummy.next;
     }
 };
