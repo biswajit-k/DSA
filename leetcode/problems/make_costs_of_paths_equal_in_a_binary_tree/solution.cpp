@@ -2,11 +2,8 @@ class Solution {
 public:
     int minIncrements(int n, vector<int>& cost) {
         
-        int pw = 1, l = 0;
-        while(pw != n + 1)  pw *= 2, l++;
-        // return pw;
-        int ans = 0;
-        pw /= 2;l--;
+        int l = log2(n), pw = (n + 1) / 2, ans = 0;
+        
         while(l)
         {
             for(int i = pw - 1, j = 0; j < pw / 2; j++, i--)
