@@ -1,23 +1,14 @@
 class Solution {
 public:
-    vector<int> distinctDifferenceArray(vector<int>& nums) {
+    vector<int> distinctDifferenceArray(vector<int>& A) {
         
-        int n = nums.size();
-        unordered_map<int, int> l, r;
-        for(int i = 0; i < n; i++)  r[nums[i]]++;
+        int n = A.size();
         
         vector<int> ans(n);
-        int ld = 0, rd = r.size();
-        for(int i = 0; i < n; i++)
-        {
-            r[nums[i]]--;
-            if(r[nums[i]] == 0) r.erase(nums[i]), rd--;
-            l[nums[i]]++;
-            if(l[nums[i]] == 1) ld++;
-            
-            ans[i] = ld - rd;
-        }
         
+        for(int i = 0; i < n; i++)
+            ans[i] = (int)(set<int>(A.begin(), A.begin() + i + 1)).size() - (int)(set<int>(A.begin() + i + 1, A.end())).size();
+
         return ans;
     }
 };
