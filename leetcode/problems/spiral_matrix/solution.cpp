@@ -1,38 +1,30 @@
 class Solution {
 public:
-    vector<int> spiralOrder(vector<vector<int>>& mat) {
+    vector<int> spiralOrder(vector<vector<int>>& A) {
         
-        int n = mat.size(), m = mat[0].size();
-        int x = 0, y = 0;
+        int n = A.size(), m = A[0].size();
+        vector<int> ans;
 
-        vector<int> res;
+        vector<pair<int, int>> order = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        vector<pair<int, int>> change = {{1, 0}, {0, 1}, {1, 0}, {0, 1}};
 
-        while(n > 0 && m > 0)
+        int x = 0, y = -1, chance = 0;
+
+        while(n && m) 
         {
-            for(int i = 0; i < m; i++)
-                res.push_back(mat[x][y++]);
+            int times = !order[chance].first ? m : n;
+            auto [dx, dy] = order[chance];
 
-            y--;    x++;
-            if(--n == 0)    break;
+            for(int i = 0; i < times; i++)
+            {
+                x += dx;    y += dy;
+                ans.push_back(A[x][y]);
+            }            
+            n -= change[chance].first;
+            m -= change[chance].second;
 
-            for(int i = 0; i < n; i++)
-                res.push_back(mat[x++][y]);
-
-            x--;    y--;
-            if(--m == 0)  break;
-
-            for(int i = 0; i < m; i++)
-                res.push_back(mat[x][y--]);
-            
-            y++;    x--;
-            if(--n == 0)    break;
-            for(int i = 0; i < n; i++)
-                res.push_back(mat[x--][y]);
-            
-            x++;    y++;
-            if(--m == 0)    break;
+            chance = (chance + 1) % 4;
         }
-        
-        return res;
+        return ans;
     }
 };
