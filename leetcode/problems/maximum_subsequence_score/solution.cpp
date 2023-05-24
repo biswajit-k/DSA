@@ -19,16 +19,14 @@ public:
         long long sum = 0, ans = 0;
         unordered_set<int> marked;
 
-        for(int i = 0; i < k - 1; i++)
+        for(int i = n - 1, j = 0; j < k - 1; i--, j++)
         {
-            auto [x, idx] = S.back();
-            sum += x;
-            marked.insert(idx);
-            S.pop_back();
+            sum += S[i].first;
+            marked.insert(S[i].second);
         }
 
         // iterate product array to take num for product
-        for(int i = 0; i < n && !S.empty(); i++)
+        for(int i = 0, j = n - k; i < n && j >= 0; i++)
         {
             auto [x, idx] = P[i];
             if(!marked.count(idx))
@@ -38,12 +36,12 @@ public:
             }
             else 
             {
-                while(!S.empty() && marked.count(S.back().second))
-                    S.pop_back();
-                if(S.empty())
+                while(j >= 0 && marked.count(S[j].second))
+                    j--;
+                if(j < 0)
                     break;
-                sum += S.back().first;
-                marked.insert(S.back().second);
+                sum += S[j].first;
+                marked.insert(S[j].second);
             }
             ans = max(ans, sum * x);
             sum -= nums1[idx];
