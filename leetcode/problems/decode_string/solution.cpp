@@ -2,51 +2,39 @@ class Solution {
 public:
     string decodeString(string s) {
         
-        stack<int> freq;
-        stack<string> strs;
-        string cur = "";
-        
-        int i = 0;
-        
-        while(i < s.length())
+        stack<string> curr_str;
+        stack<int> repeat;
+        int curr = 0;
+        curr_str.push("");
+
+        for(auto c: s)
         {
-            auto c = s[i];
             if(c >= '0' && c <= '9')
             {
-                int x = 0;
-                while(i < s.length() && s[i] >= '0' && s[i] <= '9')
-                {
-                    x *= 10;
-                    x += s[i] - '0';
-                    i++;
-                }
-                i--;
-                freq.push(x);
+                curr *= 10;
+                curr += c - '0';
             }
-                
-                
             else if(c == '[')
             {
-                strs.push(cur);
-                cur = "";
+                repeat.push(curr);
+                curr = 0;
+                curr_str.push("");
             }
-            else if(c == ']')
-            {
-                int count = freq.top();
-                freq.pop();
-                string prev = strs.top();
-                strs.pop();
-                while(count--)
-                {
-                    prev += cur;
-                }
-                cur = prev;
-            }
+            else if(c >= 'a' && c <= 'z')
+                curr_str.top() += c;
             else 
-                cur += c;
-            i++;
-            
+            {
+                int k = repeat.top();
+                repeat.pop();
+                string now = move(curr_str.top());
+                curr_str.pop();
+
+                for(int i = 0; i < k; i++)
+                    curr_str.top() += now;
+            }
+
         }
-        return cur;
+
+        return curr_str.top();
     }
 };
