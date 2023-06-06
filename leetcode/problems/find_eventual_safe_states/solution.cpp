@@ -1,36 +1,42 @@
 class Solution {
 public:
-    
-    int dfs(int x, vector<vector<int>>& graph, int status[])
-    {
-        if(status[x])
-            return status[x];
-        
-        status[x] = 1;
-        
-        for(int i = 0; i < graph[x].size(); i++)
-            if(dfs(graph[x][i], graph, status) == 1)
-                return 1;
-        
-        return status[x] = 2;
+
+    void helper(int x, vector<vector<int>>& graph, vector<int>& type) {
+
+        type[x] = 1;
+        if(graph[x].empty())
+        {
+            type[x] = 2;
+            return;
+        }
+        for(auto& c: graph[x])
+        {
+            if(!type[c])
+                helper(c, graph, type);
+            
+            if(type[c] != 2)
+            {
+                type[c] = 3;
+                return;
+            }
+        }
+        type[x] = 2;
     }
-    
+
     vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
         
         int n = graph.size();
-        int status[n + 1];
-        
-        memset(status, 0, sizeof(status));
-        
-        for(int i = 0; i < n; i++)
-            if(!status[i])
-                status[i] = dfs(i, graph, status);
-        
+        vector<int> type(n, 0);
         vector<int> ans;
-        for(int i = 0; i < n; i++)
-            if(status[i] == 2)
-                ans.push_back(i);
         
+        for(int i = 0; i < n; i++)
+            if(!type[i])
+                helper(i, graph, type);
+        
+        for(int i = 0; i < n; i++)
+            if(type[i] == 2)
+                ans.push_back(i);
+
         return ans;
     }
 };
