@@ -1,34 +1,43 @@
 class MyQueue {
-public:
+
+private:
+
     stack<int> s1, s2;
-    int top;
-    
-    MyQueue() {}
+    int s1_front;
+    bool reversed;
+
+public:
+
+    MyQueue(): reversed(false) {}
     
     void push(int x) {
-        if(s1.empty())
-            top = x;
         s1.push(x);
+        if(s1.size() == 1)  s1_front = x;
     }
     
     int pop() {
-        if(s2.empty())
+        int x = this -> peek();
+        if(reversed)
+            s2.pop();
+        else 
         {
             while(!s1.empty())
             {
                 s2.push(s1.top());
                 s1.pop();
             }
+            if(!s2.empty()) 
+                s2.pop();
         }
-        int x = s2.top();
-        s2.pop();
+
+        reversed = s2.empty() ? false : true;
+
         return x;
     }
     
     int peek() {
-        if(!s2.empty())
-            return s2.top();
-        return top;
+        if(!s2.empty()) return s2.top();
+        return s1_front;
     }
     
     bool empty() {
