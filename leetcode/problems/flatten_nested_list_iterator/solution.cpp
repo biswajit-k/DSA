@@ -15,42 +15,42 @@
  *     const vector<NestedInteger> &getList() const;
  * };
  */
+
 class NestedIterator {
-private:
-    stack<NestedInteger*> nodes;
-    
 public:
+
+    stack<NestedInteger> st;
+
     NestedIterator(vector<NestedInteger> &nestedList) {
-        int size = nestedList.size();
-        for(int i = size - 1; i >= 0; --i) {
-            nodes.push(&nestedList[i]);
-        }
+        addList(st, nestedList);
+    }
+    
+    int next() {
+        int v = st.top().getInteger();
+        st.pop();
+        return v;
     }
 
-int next() {
-    int result = nodes.top()->getInteger();
-    nodes.pop();
-    return result;
-}
-
-bool hasNext() {
-    while(!nodes.empty()) {
-        NestedInteger* curr = nodes.top();
-        if(curr -> isInteger()) {
-            return true;
-        }
-        
-        nodes.pop();
-        vector<NestedInteger>& adjs = curr -> getList();
-        int size = adjs.size();
-        for(int i = size - 1; i >= 0; --i) {
-            nodes.push(&adjs[i]);
+    void addList(stack<NestedInteger>& st, vector<NestedInteger>& list, bool copy = true) {
+        for(int i = (int)list.size() - 1; i > -1; i--)
+        {
+            if(copy)    st.push(list[i]);
+            else    st.push(move(list[i]));
         }
     }
     
-    return false;
+    bool hasNext() {
+        while(!st.empty() && !st.top().isInteger())
+        {
+            auto lst = move(st.top().getList());
+            st.pop();
+            addList(st, lst, false);
+        }
+
+        return !st.empty();
     }
 };
+
 /**
  * Your NestedIterator object will be instantiated and called as such:
  * NestedIterator i(nestedList);
