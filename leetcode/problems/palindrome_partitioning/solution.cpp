@@ -1,32 +1,52 @@
 class Solution {
 public:
-    vector<vector<string>> partition(string s) {
-        vector<vector<string>> res; // which will be our answer
-        vector<string> path; // as we are generating list everythime, so at the end this will be our list
-        helper(0, s, path, res); // calling to recursion function start from index 0 and string s
-        return res;
-    }
-    // Entire recursive function, that generates all the partition substring
-    void helper(int index, string s, vector<string> &path, vector<vector<string>> &res){
-        // Base Condition, which means when we have done partition at the end (n), then add it to our ultimate result
-        if(index == s.size()){
-            res.push_back(path);
+
+    vector<vector<string>> ans;
+
+    void helper(int idx, vector<string>& res, vector<vector<bool>>& is_palindrome, string& s) {
+
+        if(idx == s.length())
+        {
+            ans.push_back(res);
             return;
         }
-        // Let's talk about partition
-        for(int i = index; i < s.size(); i++){
-            if(isPalindrome(s, index, i)){ // what we are checking over here is, if we partition the string from index to i Example-(0, 0) is palindrome or not
-                path.push_back(s.substr(index, i - index + 1)); // take the substring and store it in our list & call the next substring from index + 1
-                helper(i + 1, s, path, res); // as we have done for (0, 0) then our next will be from (1)
-                path.pop_back(); // please make sure you remove when you backtrack. 
-                // Why? Because let say i had partion y, so when i go back. I can't have yy
+        string curr;
+        for(int i = idx; i < s.length(); i++)
+        {
+            curr += s[i];
+            if(is_palindrome[idx][i])
+            {
+                res.push_back(curr);
+                helper(i + 1, res, is_palindrome, s);
+                res.pop_back();
             }
         }
     }
-    bool isPalindrome(string s, int start, int end){ // A simple palindromic function start from 0 go till end. And basically keep on checking till they don't cross. 
-        while(start <= end){
-            if(s[start++] != s[end--]) return false;
+
+    vector<vector<string>> partition(string s) {
+        
+        int n = s.length();
+        vector<string> res;
+        vector<vector<bool>> is_palindrome(n, vector<bool>(n, false));
+
+        for(int i = 0; i < n; i++)  is_palindrome[i][i] = true;
+
+        for(int l = 2; l <= n; l++)
+        {
+            for(int i = 0; i < n; i++)
+            {
+                int j = i + l - 1;
+                if(j >= n)  break;
+
+                if(j == i + 1)
+                    is_palindrome[i][j] = s[i] == s[j];
+                else
+                    is_palindrome[i][j] = (s[i] == s[j]) && is_palindrome[i + 1][j - 1];
+            }
         }
-        return true;
+
+        helper(0, res, is_palindrome, s);
+
+        return ans;
     }
 };
