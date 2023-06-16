@@ -5,15 +5,14 @@ public:
 
     void helper(int idx, vector<int>& nums, vector<int>& res) {
 
-        if(idx == nums.size())
+        ans.push_back(res);
+
+        for(int i = idx; i < nums.size(); i++)
         {
-            ans.push_back(res);
-            return;
+            res.push_back(nums[i]);
+            helper(i + 1, nums, res);
+            res.pop_back();
         }
-        helper(idx + 1, nums, res);
-        res.push_back(nums[idx]);
-        helper(idx + 1, nums, res);
-        res.pop_back();
     }
 
     vector<vector<int>> subsets(vector<int>& nums) {
