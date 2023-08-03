@@ -1,72 +1,106 @@
 class AllOne {
 
-    unordered_map<int, list<pair<string, int>>> freq_list;
-    unordered_map<string, list<pair<string, int>>::iterator> key_it;
 
-    list<int> freq;
-    unordered_map<int, list<int>::iterator> freq_it;
+    class Bucket {
+        
+        public:
 
-    void insert_key(string k, int f) {
-        if(f > 0) {
-        freq_list[f].push_front(make_pair(k, f));
-        key_it[k] = freq_list[f].begin();
+        int frequency;
+        unordered_set<string> keys;
+
+        Bucket(): frequency(0) {}
+        Bucket(int f): frequency(f) {}
+
+    };
+
+
+    list<Bucket> frequencies;
+    unordered_map<int, list<Bucket>::iterator> bucket_by_frequency;
+    unordered_map<string, int> key_freq; 
+
+    void decrease_freq(string k) {
+
+        int f = key_freq[k];
+
+        key_freq[k] = f - 1;
+
+
+        if(f > 1)      // insert only if freq exist
+        {
+            // create bucket if not exist
+            if(bucket_by_frequency.find(f - 1) == bucket_by_frequency.end())
+            {
+                // create and insert before f
+                bucket_by_frequency[f - 1] = frequencies.insert(bucket_by_frequency[f], Bucket(f - 1));
+            }
+            
+            bucket_by_frequency[f - 1] -> keys.insert(k);
+        }
+
+        // remove from bucket and erase bucket if got empty
+        bucket_by_frequency[f] -> keys.erase(k);
+        if(bucket_by_frequency[f] -> keys.empty())
+        {
+            auto it = bucket_by_frequency[f];
+            bucket_by_frequency.erase(f);
+            frequencies.erase(it);
         }
     }
-    void remove_key(string k) {
-        if(key_it.count(k)) {
-            auto it = key_it[k];
-            int f = it -> second;
-            freq_list[f].erase(it);
-            if(freq_list[f].empty())
-                freq_list.erase(f);
-            key_it.erase(k);
+
+    void increase_freq(string k) {
+
+        // what is the frequency - update frequency
+        int f = key_freq[k];
+        key_freq[k] = f + 1;
+
+        // create next bucket if not exist and insert
+        if(bucket_by_frequency.find(f + 1) == bucket_by_frequency.end())
+        {
+            auto pos = f ? next(bucket_by_frequency[f]) : frequencies.begin();
+            bucket_by_frequency[f + 1] = frequencies.insert(pos, Bucket(f + 1));       // check where to insert
+        }
+
+        bucket_by_frequency[f + 1] -> keys.insert(k);
+
+        // remove from previous if previous > 0 and erase bucket if got empty
+        if(f > 0)
+        {
+            auto& prev_bucket = *bucket_by_frequency[f];
+            prev_bucket.keys.erase(k);
+            if(prev_bucket.keys.empty())
+            {
+                auto it = bucket_by_frequency[f];
+                bucket_by_frequency.erase(f);
+                frequencies.erase(it);
+            }
         }
     }
+
 
 public:
     AllOne() {}
     
     void inc(string key) {
-        int f = key_it.count(key) ? key_it[key] -> second : 0;
-        remove_key(key);
-        if(freq_it.count(f + 1) == 0)
-        {
-            auto pos = f ? next(freq_it[f]) : freq.begin();
-            freq_it[f + 1] = freq.insert(pos, f + 1);
-        }
-        if(freq_list.count(f) == 0 && f > 0)
-        {
-            freq.erase(freq_it[f]);
-            freq_it.erase(f);
-        }
-        insert_key(key, f + 1);
+        if(key_freq.find(key) == key_freq.end())
+            key_freq[key] = 0;
+
+        increase_freq(key);
     }
     
     void dec(string key) {
-        int f = key_it[key] -> second;
-        remove_key(key);
-
-        if(f > 1 && freq_it.count(f - 1) == 0)
-            freq_it[f - 1] = freq.insert(freq_it[f], f - 1);
-        if(freq_list.count(f) == 0)
-        {
-            freq.erase(freq_it[f]);
-            freq_it.erase(f);
-        }
-        insert_key(key, f - 1);
-
+        decrease_freq(key);
     }
     
     string getMaxKey() {
-        if(freq.empty())
+        if(frequencies.empty())
             return "";
-        return freq_list[freq.back()].back().first;
+        return *(frequencies.back().keys.begin());
     }
     
     string getMinKey() {
-        if(freq.empty())
+        if(frequencies.empty())
             return "";
-        return freq_list[freq.front()].back().first;
+        return *(frequencies.front().keys.begin());
     }
 };
 
