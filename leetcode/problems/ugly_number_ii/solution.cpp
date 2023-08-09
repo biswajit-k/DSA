@@ -1,25 +1,35 @@
 class Solution {
 public:
+
     int nthUglyNumber(int n) {
         
-        priority_queue<int, vector<int>, greater<int>> pq;
-        unordered_map<int, bool> taken;
+        if(n == 1)
+            return 1;
+        
+        vector<int> ugly(n, 0);
+        ugly[0] = 1;
 
-        pq.push(1);
+        int ptr_2, ptr_3, ptr_5, next_idx = 1;
+        ptr_2 = ptr_3 = ptr_5 = 0;
+
+        auto get_value = [&](int base, int idx) {
+            return base * ugly[idx];
+        };
 
         for(int i = 0; i < n - 1; i++)
         {
-            int x = pq.top();
-            pq.pop();
+            int mi = min({get_value(2, ptr_2), get_value(3, ptr_3), get_value(5, ptr_5)});
 
-            for(auto m: {2, 3, 5})
-                if(x * 1LL * m <= INT_MAX && !taken.count(x * m))
-                {
-                    pq.push(m * x);
-                    taken[m * x] = true;
-                }
+            if(get_value(2, ptr_2) == mi)
+                ptr_2++;
+            if(get_value(3, ptr_3) == mi)
+                ptr_3++;
+            if(get_value(5, ptr_5) == mi)
+                ptr_5++;
+
+            ugly[next_idx++] = mi;
         }
 
-        return pq.top();
+        return ugly[n - 1];
     }
 };
