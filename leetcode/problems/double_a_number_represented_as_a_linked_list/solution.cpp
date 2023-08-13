@@ -11,52 +11,32 @@
 class Solution {
 public:
     
-    string twice_str(string& s) {
+    int double_list(ListNode *head)
+    {
+        if(!head)
+            return 0;
         
-        string res = "";
-        int carry = 0;
+        int carry = double_list(head -> next);
+        int v = carry + 2 * (head -> val);
         
-        for(int i = s.length() - 1; i > -1; i--)
-        {
-            int digit = s[i] - '0';
-            res += '0' + (digit * 2 + carry) % 10;
-            carry = (digit * 2 + carry) / 10;
-        }
-        
-        if(carry)
-            res += '0' + carry;
-    
-        reverse(begin(res), end(res));
-        
-        return res;
+        head -> val = v % 10;
+        return v / 10;
     }
     
     ListNode* doubleIt(ListNode* head) {
+        
+        ListNode front;
+        front.next = head;
+        
+        int final_carry = double_list(head);
+        
+        if(final_carry)
+        {
+            ListNode *first_node = new ListNode(final_carry);
+            first_node -> next = head;
+            front.next = first_node;
+        }
      
-        string num = "";
-        
-        ListNode *curr = head;
-        
-        while(curr)
-        {
-            num += curr -> val + '0';
-            curr = curr -> next;
-        }
-        
-        string s_num = twice_str(num);
-        // cout << s_num[0] << '\n';
-        
-        ListNode *new_head = new ListNode(s_num[0] - '0');
-        curr = new_head;
-        
-        for(int i = 1; i < s_num.length(); i++)
-        {
-            ListNode *nxt = new ListNode(s_num[i] - '0');
-            curr -> next = nxt;
-            curr = nxt;
-        }
-        curr -> next = nullptr;
-        
-        return new_head;
+        return front.next;
     }
 };
