@@ -18,11 +18,6 @@ public:
         ListNode dummy = ListNode(), *slow = &dummy, *fast = &dummy;
         dummy.next = head;
 
-        while(fast -> next && fast -> next -> val < x)
-            fast = fast -> next, slow = slow -> next;
-
-        if(fast -> next)    fast = fast -> next;
-
         ListNode *temp;
         while(fast -> next)
         {
@@ -36,6 +31,8 @@ public:
             temp -> next = slow -> next;
             slow -> next = temp;
             slow = slow -> next;
+            if(fast -> next  == temp)
+                fast = fast -> next;
         }
 
         return dummy.next;
