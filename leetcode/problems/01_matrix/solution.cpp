@@ -1,25 +1,62 @@
-class Solution { // 48 ms, faster than 99.64%
+class Solution {
 public:
-    vector<vector<int>> updateMatrix(vector<vector<int>> &mat) {
-        int m = mat.size(), n = mat[0].size(), INF = m + n; // The distance of cells is up to (M+N)
-        for (int r = 0; r < m; r++) {
-            for (int c = 0; c < n; c++) {
-                if (mat[r][c] == 0) continue;
-                int top = INF, left = INF;
-                if (r - 1 >= 0) top = mat[r - 1][c];
-                if (c - 1 >= 0) left = mat[r][c - 1];
-                mat[r][c] = min(top, left) + 1;
+
+    typedef pair<int, int> cell;
+
+    int dx[4] = {0, 1, -1, 0};
+    int dy[4] = {1, 0, 0, -1};
+
+    bool is_valid(int x, int y, vector<vector<bool>>& vis) {
+        if(min(x, y) < 0 || x >= vis.size() || y >= vis[0].size() || vis[x][y])
+            return false;
+        return true;            
+    }
+
+    vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+
+        int n = mat.size(), m = mat[0].size();
+        vector<vector<bool>> vis(n, vector<bool>(m, false));
+
+        queue<cell> q;
+
+        // push all 0's into the queue for multi-source BFS
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < m; j++)
+                if(mat[i][j] == 0)
+                {
+                    q.push({i, j});
+                    vis[i][j] = true;
+                }
+
+        // stores current distance from 0's
+        int dis = 0;
+
+        while(!q.empty())
+        {
+            int sz = q.size();
+            for(int i = 0; i < sz; i++)
+            {
+                // pick the current cell and move in all 4 directions
+                auto [x, y] = q.front();
+                q.pop();
+
+                for(int j = 0; j < 4; j++)
+                {
+                    int ny = y + dy[j], nx = x + dx[j];
+                    // check if this position lies inside grid and not yet visted
+                    if(is_valid(nx, ny, vis))
+                    {
+                        vis[nx][ny] = true;
+                        mat[nx][ny] = dis + 1;
+                        q.push({nx, ny});
+                    }
+                }
+
             }
+
+            dis++;
         }
-        for (int r = m - 1; r >= 0; r--) {
-            for (int c = n - 1; c >= 0; c--) {
-                if (mat[r][c] == 0) continue;
-                int bottom = INF, right = INF;
-                if (r + 1 < m) bottom = mat[r + 1][c];
-                if (c + 1 < n) right = mat[r][c + 1];
-                mat[r][c] = min(mat[r][c], min(bottom, right) + 1);
-            }
-        }
+
         return mat;
     }
 };
