@@ -1,55 +1,35 @@
 class Solution {
 public:
-    
-       vector<vector<int>> twoSum(vector<int>& nums, int l, int r, int x)
-    {
-        vector<vector<int>> res;
-        while(l < r)
-        {
-            if(nums[l] + nums[r] == x)
-                res.push_back(vector<int>({nums[l], nums[r]}));
-            
-            
-            if(nums[l] + nums[r] < x)
-            {
-                while(l < r && nums[l] == nums[l + 1])
-                    l++;
-                l++;
-            }
-                
-            else 
-            {
-                while(l < r && nums[r] == nums[r - 1])
-                    r--;
-                r--;
-            }
-                
-        }
-        
-        return res;
+
+    void next(int& i, vector<int>& nums, int step = 1) {
+        i += step;  
+        while(i > 0 && i < nums.size() && nums[i] == nums[i - step])
+            i += step;
     }
-    
-    vector<vector<int>> threeSum(vector<int>& nums)
-    {
+
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        
+        int n = nums.size();
+        vector<vector<int>> ans;
+
         sort(begin(nums), end(nums));
-        int l = 0, r = nums.size() - 1, x = 0;
-        vector<vector<int>> res;
-        
-        for(int i = l; i < r - 1; i++)
+
+        for(int i = 0; i < n; next(i, nums))
         {
-            vector<vector<int>> temp = twoSum(nums, i + 1, r, x - nums[i]);
-            
-            for(auto& v: temp)
+            for(int j = i + 1, k = n - 1; j < k; next(j, nums))
             {
-                v.push_back(nums[i]);
-                res.push_back(move(v));
-            }               
-            
-            while(i + 1 < r && nums[i] == nums[i + 1])  i++;
+                int required = -(nums[i] + nums[j]);
+                while(j < k && nums[k] > required)
+                    k--;
+                
+                if(j < k && nums[k] == required)
+                {
+                    ans.push_back({nums[i], nums[j], nums[k]});
+                    next(k, nums, -1);
+                }
+            }
         }
-        
-        return res;
+
+        return ans;
     }
-    
-    
 };
