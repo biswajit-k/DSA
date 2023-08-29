@@ -1,2 +1,2 @@
 ## Contains My Leetcode Solutions
-Leetcode Profile: https://www.leetcode.com/biswajit-k
+Leetcode Profile: https://www.leetcode.com/biswajit_kaushik
