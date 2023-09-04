@@ -7,21 +7,19 @@
  * };
  */
 class Solution {
-        
-    bool doit(ListNode *head){
-        if(head -> val == int(1e6))
-            return true;
-        auto after = head -> next;
-        if(after == NULL)
-            return false;
-        head -> val = int(1e6);
-        return doit(after);
-    }
-    
 public:
     bool hasCycle(ListNode *head) {
-        if(head == NULL)
-            return false;
-        return doit(head);
+        
+        ListNode *slow = head, *fast = head;
+
+        while(fast && fast -> next) {
+            slow = slow -> next;
+            fast = fast -> next -> next;
+
+            if(slow == fast)
+                return true;
+        }
+
+        return false;
     }
 };
