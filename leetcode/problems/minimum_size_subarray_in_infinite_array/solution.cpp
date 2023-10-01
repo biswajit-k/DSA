@@ -1,43 +1,50 @@
 class Solution {
 public:
-    typedef long long llint;
-    
     int minSizeSubarray(vector<int>& nums, int target) {
         
         int n = nums.size();
         
-        vector<llint> pref(2 * n, 0);
-        for(int i = 1; i < pref.size(); i++)  
-            pref[i] = pref[i - 1] + (i > n ? nums[i - (n + 1)] : nums[i - 1]);
+        typedef long long llint;
         
+        vector<llint> pref(n + 1);
+        for(int i = 1; i <= n; i++)
+            pref[i] = pref[i - 1] + nums[i - 1];
         
-        llint len = 1e9 + 11;
+        llint ans = 1e9 + 10;
         
         for(int i = 1; i <= n; i++)
         {
-            llint l = 1, r = 1e9 + 10;
+            llint low = 1, high = 1e9 + 10;
             
-            while(l <= r)
+            while(low <= high)
             {
-                llint mid = (l + r) / 2;
-                
-                llint sum = pref[n] * (mid / n) + ((mid % n) ? (pref[(mid % n) + i - 1] - pref[i - 1]) : 0);
-                
+                llint count = (low + high) / 2;
+
+                llint full = count / n, remain = count % n;
+
+                llint remain_start = i, remain_end = i + remain - 1;
+
+                llint sum = pref[n] * full;
+
+                if(remain_end <= n)
+                    sum += pref[remain_end] - pref[remain_start - 1];
+                else
+                    sum += pref[n] + pref[remain_end % n] - pref[remain_start - 1];
+
                 if(sum == target)
                 {
-                    len = min(len, mid);
+                    ans = min(ans, count);
                     break;
                 }
                 if(sum < target)
-                    l = mid + 1;
-                else
-                    r = mid - 1;
-                
+                    low = count + 1;
+                else 
+                    high = count - 1;    
             }
-            
             
         }
         
-        return (len > 1e9 + 1 ? -1 : len);
+        return (ans > 1e9 ? -1 : ans);
     }
+    
 };
